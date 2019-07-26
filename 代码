@@ -1,0 +1,106 @@
+import java.util.Scanner;
+
+public class SuZhao {
+
+	static int a;//表示物品的数量
+	static int ys;//约束数
+	double[] value;//物品的价值
+	double[][] zl;//物品的质量
+	int[] sx;//背包的一个上限
+	double[] dq_zl = new double[ys];
+
+	double dq_value=0;
+	double max_value=0;
+	int[] best_flag;
+	int[] flag;
+	public SuZhao(double value[],double zl[][],int sx[]) {
+		this.value = value;
+		this.zl=zl;
+		this.sx=sx;
+		best_flag = new int[a];
+		flag=new int[a];
+	}
+	private boolean su(double[] dq_zl,int ys,int[] sx,int z,double[][] zl){
+		int x;
+		for(x=0;x<ys;x++){
+			if(dq_zl[x]+zl[x][z]<sx[x])
+				continue;
+			else break;
+		}
+		if(x==ys)
+			return true;
+		else 
+			return false;
+	}
+	private void sz(int z) {
+		if (z >= a) {
+			if (dq_value > max_value) {
+				max_value = dq_value;
+				for (int x = 0; x < a; x++) {
+					best_flag[x] = flag[x]; 
+					// System.out.print(flag[x] + " ");
+				}
+			}
+		}
+
+		else {
+			
+			if (su(dq_zl,ys,sx,z,zl)) {
+				for(int x=0;x<ys;x++){
+				dq_zl[x] += zl[x][z];}
+				dq_value += value[z];
+
+				flag[z] = 1;
+				sz(z + 1);
+
+				
+				for(int x=0;x<ys;x++){
+					dq_zl[x] -= zl[x][z];}
+				//c_weight -= weight[z];
+				dq_value -= value[z];
+			}
+
+			flag[z] = 0;
+			sz(z + 1); 
+
+		}
+	}
+
+
+	public static void main(String args[]) {
+		Scanner sc = new Scanner(System.in);
+		a = sc.nextInt();
+
+	    ys = sc.nextInt();
+	    double maxValue = sc.nextDouble();
+	    
+	    double[] value = new double[a];
+	    for(int x = 0; x < a; x++) {        
+	    	value[x] = sc.nextDouble();
+	    }
+	    
+	    double[][] zl =  new double[ys][a];
+	    for(int x = 0; x < ys; x++) {           
+	    	for(int y=0;y < a;y++) {
+	    		zl[x][y] = sc.nextDouble();
+	    	}
+	    }
+	    int[] sx = new int[ys];
+	    for(int y = 0; y < ys; y++) {        
+	    	sx[y] = sc.nextInt();
+        }
+		
+		
+		
+		
+	    SuZhao b= new SuZhao(value,zl,sx);
+		b.sz(0);
+		System.out.println("最优值为：" + b.max_value);
+		System.out.println("最优选取方案为：");
+		for (int x = 0; x < a; x++) {
+			if (b.best_flag[x] == 1)
+				System.out.print(x+1+ " ");
+		}
+	}
+}
+
